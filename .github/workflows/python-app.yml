@@ -34,8 +34,8 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       
       - name: Build Docker image  
-        run: docker build -t aman333/flaskapp .
+        run: docker build -t amans333/flaskapp .
       
       - name: Push Docker image 
-        run: docker push aman333/flaskapp
+        run: docker push amans333/flaskapp
 
