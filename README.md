@@ -42,25 +42,30 @@ aws-flask-docker-cicd/
 ## 🐍 Flask App Code (app.py)
 
 ```bash 
-from flask import Flask
+from flask import Flask 
 app = Flask(__name__)
 
-@app.route("/")
-def hello():
-    return "Hello, World from Flask + Docker + AWS CI/CD!"
+@app.route('/')
+def home():
+    return "Hellooo from dockerized Flask app!!"
 
+if __name__=='__main__':
+    app.run(host='0.0.0.0', port=5000)
+```
+## 📜Requirements
+```bash
+Flask==2.3.2
 ```
 ## 🐳 Dockerfile
 
 ```bash 
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 WORKDIR /app
-
+COPY requirements.txt .
+RUN pip install -r requirements.txt 
 COPY . .
-
-RUN pip install -r requirements.txt
-
+EXPOSE 5000
 CMD ["python", "app.py"]
 ```
 ### Test locally:
@@ -84,41 +89,47 @@ git push -u origin main
 ### Create folder: `.github/workflows/ci.yml`
 
 ```bash
-name: CI Pipeline
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Docker CI - Build and Push
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Set Up Python
+      
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: Install Dependencies
+      - name: Install dependencies 
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Log in to DockerHub
-        uses: docker/login-action@v2
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2   
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Build Docker image  
+        run: docker build -t username/flaskapp .
+      
+      - name: Push Docker image 
+        run: docker push username/flaskapp
 
-      - name: Build Docker Image
-        run: docker build -t username/flask-app .
-
-      - name: Push Docker Image
-        run: docker push username/flask-app
 
 ```
 ![CI Workflow](https://github.com/AmanSharma39/aws-flask-docker-cicd/blob/main/Screenshots/Screenshot%202025-06-24%20125956.png?raw=true)
