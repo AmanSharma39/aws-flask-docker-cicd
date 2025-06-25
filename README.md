@@ -90,7 +90,6 @@ git push -u origin main
 
 ```bash
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
 name: Docker CI - Build and Push
 
